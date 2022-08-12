@@ -59,18 +59,35 @@ class MainActivity : AppCompatActivity() {
 
         controlButton.setOnClickListener {
             Log.d("DEBUG_PRINT", "clicked control button")
-            if (mTimer == null){
-                disableManualOperation()
-                startAutoSlideshow()
-                controlButton.text = "停止"
+            if (!isSlideShowActive()){
+                startAutoSlideshowState()
             } else {
-                enableManualOperation()
-                stopAutoSlideshow()
-                controlButton.text = "再生"
+                stopAutoSlideshowState()
             }
         }
 
         Log.d("DEBUG_PRINT", "size of ImageUrlList : " + imageUrlList.size)
+    }
+
+    private fun isSlideShowActive (): Boolean {
+        return mTimer != null
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopAutoSlideshowState()
+    }
+
+    private fun startAutoSlideshowState() {
+        disableManualOperation()
+        startAutoSlideshow()
+        controlButton.text = "停止"
+    }
+
+    private fun stopAutoSlideshowState() {
+        enableManualOperation()
+        stopAutoSlideshow()
+        controlButton.text = "再生"
     }
 
     private fun checkPermission(): Boolean {
@@ -99,6 +116,7 @@ class MainActivity : AppCompatActivity() {
     private fun setUp () {
         getContentsInfo()
         if (imageExists()) {
+            currentImageIndex = 0
             enableAllOperation()
             setImageToView()
         } else {
